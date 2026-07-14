@@ -29,3 +29,25 @@ print(f"\nQuery: {query}\n")
 print("Top matching documents:")
 for i, doc in enumerate(results, 1):
     print(f"{i}. {doc.page_content}")
+    import ollama
+
+# Combine retrieved documents into context
+context = "\n".join([doc.page_content for doc in results])
+
+# Generate an answer using the local LLM
+response = ollama.chat(model='llama3.2:1b', messages=[
+    {
+        'role': 'user',
+        'content': f"""Answer the question using only the context below.
+
+Context:
+{context}
+
+Question: {query}
+
+Answer:"""
+    }
+])
+
+print("\n--- Generated Answer ---")
+print(response['message']['content'])
